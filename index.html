@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성안고 급식ON</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #697386;
+      --primary: #5b5ce2;
+      --primary2: #7b61ff;
+      --line: #e7e9f0;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Noto Sans KR", sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: auto;
+      padding: 22px 18px 50px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: white;
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: 0 12px 35px rgba(27, 31, 55, .08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      background: rgba(255,255,255,.18);
+      display: grid;
+      place-items: center;
+      font-size: 27px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 27px;
+    }
+
+    .sub {
+      margin-top: 5px;
+      opacity: .88;
+      font-size: 14px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    input[type="date"] {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 13px;
+      color: #20243a;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 15px;
+      font-weight: 700;
+      background: white;
+      color: #3f41b7;
+    }
+
+    .btn.ghost {
+      background: rgba(255,255,255,.16);
+      color: white;
+    }
+
+    .status {
+      margin-top: 14px;
+      font-size: 13px;
+      min-height: 18px;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      margin: 20px 0 14px;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: white;
+      color: #596174;
+      border-radius: 13px;
+      padding: 11px 16px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: var(--text);
+      color: white;
+      border-color: var(--text);
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .meal-view {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .meal-card,
+    .feature-card,
+    .day-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      box-shadow: 0 5px 20px rgba(27,31,55,.04);
+    }
+
+    .meal-card {
+      padding: 20px;
+    }
+
+    .meal-icon {
+      font-size: 27px;
+    }
+
+    .meal-title {
+      font-weight: 900;
+      font-size: 18px;
+      margin: 8px 0;
+    }
+
+    .menu-list {
+      padding-left: 18px;
+      line-height: 1.8;
+    }
+
+    .cal {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .like-btn {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 11px;
+      padding: 5px 8px;
+      margin-left: 5px;
+    }
+
+    .like-btn.liked {
+      background: #fff0f2;
+      color: #e11d48;
+    }
+
+    .week-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 15px 0;
+    }
+
+    .week-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 10px;
+      padding: 8px 11px;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .day-card {
+      padding: 15px;
+      min-height: 190px;
+    }
+
+    .day-card.today {
+      border: 2px solid var(--primary);
+    }
+
+    .day-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .day-name {
+      font-weight: 900;
+    }
+
+    .date-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .meal-block {
+      padding: 9px 0;
+      border-top: 1px solid #f0f1f5;
+    }
+
+    .meal-name {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .menu {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .feature-card {
+      padding: 20px;
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .fav-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .chip {
+      background: #f0f1ff;
+      color: #4546b8;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .chip button {
+      border: 0;
+      background: none;
+      color: inherit;
+    }
+
+    .fav-add {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .fav-add input {
+      flex: 1;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      padding: 10px 12px;
+    }
+
+    .primary {
+      border: 0;
+      border-radius: 11px;
+      padding: 10px 14px;
+      background: var(--primary);
+      color: white;
+      font-weight: 800;
+    }
+
+    .champ {
+      background: linear-gradient(145deg,#fff,#f7f7ff);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .versus {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .food-option {
+      border: 2px solid var(--line);
+      background: white;
+      border-radius: 18px;
+      padding: 20px 12px;
+      min-height: 105px;
+      font-weight: 900;
+    }
+
+    .food-option:hover {
+      border-color: var(--primary);
+    }
+
+    .vs {
+      font-weight: 1000;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .result {
+      margin-top: 18px;
+      font-weight: 800;
+    }
+
+    .notice {
+      padding: 13px 15px;
+      background: #fff8df;
+      border: 1px solid #ffe7a3;
+      border-radius: 13px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .empty {
+      color: #9aa1b2;
+      font-size: 13px;
+    }
+
+    footer {
+      text-align: center;
+      color: #9aa1b2;
+      font-size: 12px;
+      margin-top: 25px;
+    }
+
+    @media(max-width:850px) {
+      .week-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .meal-view {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media(max-width:520px) {
+      .wrap {
+        padding: 12px 10px 35px;
+      }
+
+      header {
+        border-radius: 20px;
+        padding: 22px 18px;
+      }
+
+      h1 {
+        font-size: 23px;
+      }
+
+      .week-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .versus {
+        grid-template-columns: 1fr;
+      }
+
+      .vs {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <div class="logo">🍚</div>
+
+      <div>
+        <h1>성안고 급식ON</h1>
+        <div class="sub">
+          오늘 뭐 먹지? 급식부터 최애 메뉴까지 한 번에!
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input id="datePicker" type="date">
+
+      <button class="btn" id="searchBtn">
+        선택한 날 급식 보기
+      </button>
+
+      <button class="btn ghost" id="todayBtn">
+        오늘로
+      </button>
+    </div>
+
+    <div class="status" id="status">
+      급식 정보를 불러오는 중...
+    </div>
+  </header>
+
+
+  <!-- 메뉴 -->
+  <nav>
+
+    <button class="tab active" data-tab="today">
+      🍱 오늘 급식
+    </button>
+
+    <button class="tab" data-tab="week">
+      📅 주간 급식
+    </button>
+
+    <button class="tab" data-tab="likes">
+      ❤️ 좋아요
+    </button>
+
+    <button class="tab" data-tab="worldcup">
+      🏆 음식 월드컵
+    </button>
+
+    <button class="tab" data-tab="favorites">
+      🔔 최애 메뉴 알림
+    </button>
+
+  </nav>
+
+
+  <!-- 오늘 급식 -->
+  <section id="today" class="section active">
+
+    <div class="meal-view" id="todayMeals"></div>
+
+  </section>
+
+
+  <!-- 주간 급식 -->
+  <section id="week" class="section">
+
+    <div class="week-head">
+
+      <button class="mini-btn" id="prevWeek">
+        ← 이전 주
+      </button>
+
+      <div class="week-title" id="weekTitle">
+        주간 급식
+      </div>
+
+      <button class="mini-btn" id="nextWeek">
+        다음 주 →
+      </button>
+
+    </div>
+
+    <div class="week-grid" id="weekGrid"></div>
+
+  </section>
+
+
+  <!-- 좋아요 -->
+  <section id="likes" class="section">
+
+    <div class="feature-card">
+
+      <h2>❤️ 맛있었던 메뉴 좋아요</h2>
+
+      <p>
+        급식 메뉴에서 ❤️를 눌러
+        맛있었던 메뉴를 기록해 보세요.
+      </p>
+
+      <div id="likedMenus" class="fav-list"></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- 음식 월드컵 -->
+  <section id="worldcup" class="section">
+
+    <div class="champ">
+
+      <div class="notice">
+        이번 주 급식에 나온 메뉴 중
+        랜덤으로 2개를 골라 대결합니다.
+      </div>
+
+      <h2 id="wcRound">
+        좋아하는 음식 월드컵
+      </h2>
+
+      <div class="versus">
+
+        <button class="food-option" id="foodA">
+          준비 중...
+        </button>
+
+        <div class="vs">
+          VS
+        </div>
+
+        <button class="food-option" id="foodB">
+          준비 중...
+        </button>
+
+      </div>
+
+      <div class="result" id="wcResult"></div>
+
+      <button class="primary" id="restartWC"
+        style="margin-top:16px">
+        월드컵 다시 시작
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- 최애 메뉴 -->
+  <section id="favorites" class="section">
+
+    <div class="feature-card">
+
+      <h2>🔔 최애 메뉴 알림</h2>
+
+      <p>
+        좋아하는 메뉴를 등록하면
+        급식표에서 해당 메뉴가 나오는 날을 알려줍니다.
+      </p>
+
+      <div class="fav-add">
+
+        <input
+          id="favInput"
+          placeholder="예: 제육볶음"
+        >
+
+        <button class="primary" id="addFav">
+          추가
+        </button>
+
+      </div>
+
+      <div id="favList" class="fav-list"></div>
+
+      <div id="favNotice" style="margin-top:16px"></div>
+
+    </div>
+
+  </section>
+
+
+  <footer>
+    성안고등학교 급식ON · NEIS 학교급식식단정보 Open API
+  </footer>
+
+</div>
+
+
+<script>
+
+  /* =========================
+     NEIS 급식 API 설정
+  ========================= */
+
+  const API =
+    "https://open.neis.go.kr/hub/mealServiceDietInfo";
+
+  const OFFICE_CODE = "J10";
+
+  const SCHOOL_CODE = "7530475";
+
+
+  /* =========================
+     기본 변수
+  ========================= */
+
+  const $ = id => document.getElementById(id);
+
+  const today = new Date();
+
+  const pad = n =>
+    String(n).padStart(2, "0");
+
+  const ymd = d =>
+    `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+  const ymd8 = d =>
+    `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+
+  const parseDate = s => {
+
+    const [y,m,d] =
+      s.split("-").map(Number);
+
+    return new Date(y,m-1,d);
+
+  };
+
+  const koreanDays =
+    ["일","월","화","수","목","금","토"];
+
+
+  let meals = {};
+
+  let weekStart = getMonday(today);
+
+  let worldCupItems = [];
+
+  let wcA = "";
+
+  let wcB = "";
+
+
+  $("datePicker").value = ymd(today);
+
+
+  /* =========================
+     월요일 구하기
+  ========================= */
+
+  function getMonday(date) {
+
+    const d = new Date(date);
+
+    const day = d.getDay();
+
+    d.setDate(
+      d.getDate() +
+      (day === 0 ? -6 : 1 - day)
+    );
+
+    d.setHours(0,0,0,0);
+
+    return d;
+
+  }
+
+
+  /* =========================
+     메뉴 텍스트 정리
+  ========================= */
+
+  function cleanMenu(text) {
+
+    return text
+      .replace(/<br\s*\/?>/gi,"\n")
+      .split("\n")
+      .map(x =>
+        x
+          .replace(/\([^)]*\)/g,"")
+          .replace(/\s+/g," ")
+          .trim()
+      )
+      .filter(Boolean);
+
+  }
+
+
+  /* =========================
+     HTML 특수문자 처리
+  ========================= */
+
+  function esc(s) {
+
+    return s.replace(
+      /[&<>"']/g,
+
+      c => ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#039;'
+      }[c])
+    );
+
+  }
+
+
+  /* =========================
+     급식 API 가져오기
+  ========================= */
+
+  async function fetchMeals(startDate,endDate) {
+
+    const params = new URLSearchParams({
+
+      Type:"xml",
+
+      pIndex:"1",
+
+      pSize:"100",
+
+      ATPT_OFCDC_SC_CODE:
+        OFFICE_CODE,
+
+      SD_SCHUL_CODE:
+        SCHOOL_CODE,
+
+      MLSV_FROM_YMD:
+        ymd8(startDate),
+
+      MLSV_TO_YMD:
+        ymd8(endDate)
+
+    });
+
+
+    const response =
+      await fetch(
+        `${API}?${params}`
+      );
+
+
+    if(!response.ok) {
+
+      throw new Error(
+        "급식 정보를 가져오지 못했습니다."
+      );
+
+    }
+
+
+    const xmlText =
+      await response.text();
+
+
+    const xml =
+      new DOMParser()
+        .parseFromString(
+          xmlText,
+          "text/xml"
+        );
+
+
+    const rows =
+      [...xml.querySelectorAll("row")];
+
+
+    if(rows.length === 0) {
+
+      return {};
+
+    }
+
+
+    const result = {};
+
+
+    rows.forEach(row => {
+
+      const date =
+        row.querySelector(
+          "MLSV_YMD"
+        )?.textContent || "";
+
+      const type =
+        row.querySelector(
+          "MMEAL_SC_NM"
+        )?.textContent || "";
+
+      const menu =
+        cleanMenu(
+          row.querySelector(
+            "DDISH_NM"
+          )?.textContent || ""
+        );
+
+      const cal =
+        row.querySelector(
+          "CAL_INFO"
+        )?.textContent || "";
+
+
+      if(!result[date]) {
+
+        result[date] = [];
+
+      }
+
+
+      result[date].push({
+
+        type,
+        menu,
+        cal
+
+      });
+
+    });
+
+
+    return result;
+
+  }
+
+
+  /* =========================
+     날짜별 급식
+  ========================= */
+
+  async function loadDate(dateString) {
+
+    const date =
+      parseDate(dateString);
+
+    $("status").textContent =
+      "급식 정보를 불러오는 중...";
+
+
+    try {
+
+      const data =
+        await fetchMeals(
+          date,
+          date
+        );
+
+
+      meals = {
+        ...meals,
+        ...data
+      };
+
+
+      renderToday(date);
+
+
+      $("status").textContent =
+        `${date.getFullYear()}년
+        ${date.getMonth()+1}월
+        ${date.getDate()}일 급식`;
+
+
+      checkFavorites();
+
+
+    } catch(error) {
+
+      $("status").textContent =
+        "급식 정보를 불러오지 못했습니다.";
+
+      $("todayMeals").innerHTML = `
+        <div class="notice">
+          NEIS 급식 API에 연결하지 못했습니다.
+          인터넷 연결을 확인해 주세요.
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  /* =========================
+     급식 아이콘
+  ========================= */
+
+  function mealIcon(type) {
+
+    if(type.includes("조식"))
+      return "🌅";
+
+    if(type.includes("중식"))
+      return "🍚";
+
+    if(type.includes("석식"))
+      return "🌙";
+
+    return "🍴";
+
+  }
+
+
+  /* =========================
+     오늘 급식 표시
+  ========================= */
+
+  function renderToday(date) {
+
+    const key = ymd8(date);
+
+    const data =
+      meals[key] || [];
+
+
+    const container =
+      $("todayMeals");
+
+
+    if(!data.length) {
+
+      container.innerHTML = `
+        <div class="notice">
+          이 날짜에는 등록된 급식 정보가 없습니다.
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      data.map(meal => `
+
+        <article class="meal-card">
+
+          <div class="meal-icon">
+            ${mealIcon(meal.type)}
+          </div>
+
+          <div class="meal-title">
+            ${esc(meal.type)}
+          </div>
+
+          <ul class="menu-list">
+
+            ${meal.menu.map(item => `
+
+              <li>
+
+                ${esc(item)}
+
+                <button
+                  class="like-btn"
+                  data-menu="${esc(item)}"
+                  data-date="${key}"
+                >
+                  ♡
+                </button>
+
+              </li>
+
+            `).join("")}
+
+          </ul>
+
+          ${
+            meal.cal
+            ? `<div class="cal">
+                🔥 ${esc(meal.cal)} kcal
+              </div>`
+            : ""
+          }
+
+        </article>
+
+      `).join("");
+
+
+    container
+      .querySelectorAll(".like-btn")
+      .forEach(button => {
+
+        const key =
+          likeKey(
+            button.dataset.date,
+            button.dataset.menu
+          );
+
+
+        if(isLiked(key)) {
+
+          button.classList.add("liked");
+
+          button.textContent = "♥";
+
+        }
+
+
+        button.onclick = () => {
+
+          toggleLike(
+            key,
+            button.dataset.menu,
+            button
+          );
+
+        };
+
+      });
+
+  }
+
+
+  /* =========================
+     좋아요 기능
+  ========================= */
+
+  function likeKey(date,menu) {
+
+    return `${date}|${menu}`;
+
+  }
+
+
+  function getLikes() {
+
+    return JSON.parse(
+      localStorage.getItem("mealLikes")
+      || "{}"
+    );
+
+  }
+
+
+  function isLiked(key) {
+
+    return !!getLikes()[key];
+
+  }
+
+
+  function toggleLike(key,menu,button) {
+
+    const likes =
+      getLikes();
+
+
+    if(likes[key]) {
+
+      delete likes[key];
+
+    } else {
+
+      likes[key] = {
+
+        menu: menu,
+
+        date: key.split("|")[0]
+
+      };
+
+    }
+
+
+    localStorage.setItem(
+      "mealLikes",
+      JSON.stringify(likes)
+    );
+
+
+    button.classList.toggle(
+      "liked",
+      !!likes[key]
+    );
+
+
+    button.textContent =
+      likes[key] ? "♥" : "♡";
+
+
+    renderLikes();
+
+  }
+
+
+  function renderLikes() {
+
+    const likes =
+      Object.values(getLikes());
+
+
+    $("likedMenus").innerHTML =
+      likes.length
+
+      ? likes.map(item => `
+
+          <span class="chip">
+            ❤️ ${esc(item.menu)}
+            <small>${item.date}</small>
+          </span>
+
+        `).join("")
+
+      : `
+          <span class="empty">
+            아직 좋아요를 누른 메뉴가 없습니다.
+          </span>
+        `;
+
+  }
+
+
+  /* =========================
+     주간 급식
+  ========================= */
+
+  async function loadWeek() {
+
+    const end =
+      new Date(weekStart);
+
+    end.setDate(
+      end.getDate() + 4
+    );
+
+
+    $("weekTitle").textContent =
+      `${weekStart.getMonth()+1}/
+      ${weekStart.getDate()}
+      ~
+      ${end.getMonth()+1}/
+      ${end.getDate()}`;
+
+
+    try {
+
+      const data =
+        await fetchMeals(
+          weekStart,
+          end
+        );
+
+
+      meals = {
+        ...meals,
+        ...data
+      };
+
+
+      renderWeek();
+
+      makeWorldCupItems();
+
+      checkFavorites();
+
+
+    } catch(error) {
+
+      $("weekGrid").innerHTML = `
+        <div class="notice">
+          주간 급식 정보를 불러오지 못했습니다.
+        </div>
+      `;
+
+    }
+
+  }
+
+
+  function renderWeek() {
+
+    const grid =
+      $("weekGrid");
+
+
+    grid.innerHTML = "";
+
+
+    for(let i=0;i<5;i++) {
+
+      const date =
+        new Date(weekStart);
+
+      date.setDate(
+        date.getDate()+i
+      );
+
+
+      const key =
+        ymd8(date);
+
+      const data =
+        meals[key] || [];
+
+
+      const card =
+        document.createElement(
+          "article"
+        );
+
+
+      card.className =
+        "day-card";
+
+
+      if(
+        ymd(date) === ymd(today)
+      ) {
+
+        card.classList.add("today");
+
+      }
+
+
+      card.innerHTML = `
+
+        <div class="day-top">
+
+          <div class="day-name">
+            ${koreanDays[date.getDay()]}요일
+          </div>
+
+          <div class="date-label">
+            ${date.getMonth()+1}/${date.getDate()}
+          </div>
+
+        </div>
+
+        ${
+          data.length
+
+          ? data.map(meal => `
+
+              <div class="meal-block">
+
+                <div class="meal-name">
+                  ${esc(meal.type)}
+                </div>
+
+                <div class="menu">
+                  ${meal.menu
+                    .map(esc)
+                    .join(" · ")}
+                </div>
+
+              </div>
+
+            `).join("")
+
+          : `
+              <div class="empty">
+                급식 정보 없음
+              </div>
+            `
+        }
+
+      `;
+
+
+      grid.appendChild(card);
+
+    }
+
+  }
+
+
+  /* =========================
+     음식 월드컵
+  ========================= */
+
+  function allMenus() {
+
+    const set =
+      new Set();
+
+
+    Object.values(meals)
+      .flat()
+      .forEach(meal => {
+
+        meal.menu.forEach(menu => {
+
+          set.add(menu);
+
+        });
+
+      });
+
+
+    return [...set];
+
+  }
+
+
+  function makeWorldCupItems() {
+
+    worldCupItems =
+      allMenus()
+        .sort(() => Math.random() - .5);
+
+
+    if(worldCupItems.length < 2) {
+
+      $("foodA").textContent =
+        "급식 불러오는 중";
+
+      $("foodB").textContent =
+        "급식 불러오는 중";
+
+      return;
+
+    }
+
+
+    wcA =
+      worldCupItems.shift();
+
+    wcB =
+      worldCupItems.shift();
+
+
+    renderWorldCup();
+
+  }
+
+
+  function renderWorldCup() {
+
+    $("foodA").textContent =
+      wcA;
+
+    $("foodB").textContent =
+      wcB;
+
+
+    $("wcResult").textContent =
+      "둘 중 더 좋아하는 메뉴를 눌러보세요!";
+
+  }
+
+
+  function chooseFood(food) {
+
+    if(worldCupItems.length === 0) {
+
+      $("foodA").textContent =
+        food;
+
+      $("foodB").textContent =
+        "🏆";
+
+      $("wcResult").textContent =
+        `🏆 최종 우승: ${food}`;
+
+      return;
+
+    }
+
+
+    const next =
+      worldCupItems.shift();
+
+
+    if(Math.random() < .5) {
+
+      wcA = food;
+      wcB = next;
+
+    } else {
+
+      wcA = next;
+      wcB = food;
+
+    }
+
+
+    renderWorldCup();
+
+  }
+
+
+  $("foodA").onclick =
+    () => chooseFood(wcA);
+
+
+  $("foodB").onclick =
+    () => chooseFood(wcB);
+
+
+  $("restartWC").onclick =
+    makeWorldCupItems;
+
+
+  /* =========================
+     최애 메뉴
+  ========================= */
+
+  function getFavorites() {
+
+    return JSON.parse(
+      localStorage.getItem(
+        "favoriteMeals"
+      ) || "[]"
+    );
+
+  }
+
+
+  function saveFavorites(list) {
+
+    localStorage.setItem(
+      "favoriteMeals",
+      JSON.stringify(list)
+    );
+
+  }
+
+
+  function renderFavorites() {
+
+    const favorites =
+      getFavorites();
+
+
+    $("favList").innerHTML =
+      favorites.length
+
+      ? favorites.map(
+          (food,index) => `
+
+            <span class="chip">
+
+              🔔 ${esc(food)}
+
+              <button
+                onclick="removeFavorite(${index})"
+              >
+                ×
+              </button>
+
+            </span>
+
+          `
+        ).join("")
+
+      : `
+          <span class="empty">
+            등록된 최애 메뉴가 없습니다.
+          </span>
+        `;
+
+  }
+
+
+  window.removeFavorite =
+    function(index) {
+
+      const favorites =
+        getFavorites();
+
+
+      favorites.splice(index,1);
+
+
+      saveFavorites(favorites);
+
+      renderFavorites();
+
+      checkFavorites();
+
+    };
+
+
+  $("addFav").onclick =
+    function() {
+
+      const input =
+        $("favInput");
+
+
+      const value =
+        input.value.trim();
+
+
+      if(!value) {
+
+        return;
+
+      }
+
+
+      const favorites =
+        getFavorites();
+
+
+      if(
+        !favorites.includes(value)
+      ) {
+
+        favorites.push(value);
+
+      }
+
+
+      saveFavorites(favorites);
+
+
+      input.value = "";
+
+
+      renderFavorites();
+
+      checkFavorites();
+
+    };
+
+
+  $("favInput")
+    .addEventListener(
+      "keydown",
+      event => {
+
+        if(event.key === "Enter") {
+
+          $("addFav").click();
+
+        }
+
+      }
+    );
+
+
+  function checkFavorites() {
+
+    const favorites =
+      getFavorites();
+
+
+    const results = [];
+
+
+    Object.entries(meals)
+      .forEach(([date, rows]) => {
+
+        rows.forEach(meal => {
+
+          meal.menu.forEach(menu => {
+
+            const matched =
+              favorites.some(
+                favorite =>
+                  menu
+                    .toLowerCase()
+                    .includes(
+                      favorite.toLowerCase()
+                    )
+              );
+
+
+            if(matched) {
+
+              results.push({
+                date,
+                menu
+              });
+
+            }
+
+          });
+
+        });
+
+      });
+
+
+    if(!results.length) {
+
+      $("favNotice").innerHTML =
+        "";
+
+      return;
+
+    }
+
+
+    $("favNotice").innerHTML = `
+
+      <div class="notice">
+
+        🔔 등록한 최애 메뉴가 있습니다!
+
+        <br><br>
+
+        ${
+          results
+            .slice(0,10)
+            .map(item =>
+              `<b>${item.date}</b>
+               · ${esc(item.menu)}`
+            )
+            .join("<br>")
+        }
+
+      </div>
+
+    `;
+
+  }
+
+
+  /* =========================
+     탭 전환
+  ========================= */
+
+  function switchTab(id) {
+
+    document
+      .querySelectorAll(".tab")
+      .forEach(button => {
+
+        button.classList.toggle(
+          "active",
+          button.dataset.tab === id
+        );
+
+      });
+
+
+    document
+      .querySelectorAll(".section")
+      .forEach(section => {
+
+        section.classList.toggle(
+          "active",
+          section.id === id
+        );
+
+      });
+
+
+    if(id === "week") {
+
+      loadWeek();
+
+    }
+
+
+    if(id === "likes") {
+
+      renderLikes();
+
+    }
+
+
+    if(id === "favorites") {
+
+      renderFavorites();
+
+      checkFavorites();
+
+    }
+
+
+    if(id === "worldcup") {
+
+      if(worldCupItems.length < 1) {
+
+        makeWorldCupItems();
+
+      }
+
+    }
+
+  }
+
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(button => {
+
+      button.onclick = () => {
+
+        switchTab(
+          button.dataset.tab
+        );
+
+      };
+
+    });
+
+
+  /* =========================
+     날짜 버튼
+  ========================= */
+
+  $("searchBtn").onclick =
+    () => {
+
+      loadDate(
+        $("datePicker").value
+      );
+
+    };
+
+
+  $("todayBtn").onclick =
+    () => {
+
+      $("datePicker").value =
+        ymd(today);
+
+      switchTab("today");
+
+      loadDate(
+        ymd(today)
+      );
+
+    };
+
+
+  $("prevWeek").onclick =
+    () => {
+
+      weekStart.setDate(
+        weekStart.getDate() - 7
+      );
+
+      loadWeek();
+
+    };
+
+
+  $("nextWeek").onclick =
+    () => {
+
+      weekStart.setDate(
+        weekStart.getDate() + 7
+      );
+
+      loadWeek();
+
+    };
+
+
+  /* =========================
+     앱 시작
+  ========================= */
+
+  renderLikes();
+
+  renderFavorites();
+
+  loadDate(
+    ymd(today)
+  );
+
+</script>
+
+</body>
+</html>
